@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 //import static org.junit.Assert.assertThat; 얘 쓰면 error 난다. 진짜 이거 떄문에 한시간 쓴듯;; 보고 잘 따라쓰자 ;
@@ -47,5 +48,24 @@ public class PostsRepositoryTest {
         Posts posts = postsList.get(0);
         assertThat(posts.getTitle()).isEqualTo(title);
         assertThat(posts.getContent()).isEqualTo(content);
+    }
+
+    //BaseTimeEntity를 확인하기 위한 코드 추가
+    @Test
+    public void BaseTimeEntity_register(){
+        //given
+        LocalDateTime now = LocalDateTime.of(2019,6,4,0,0,0);
+        postsRepository.save(Posts.builder()
+            .title("title").content("content").author("author").build());
+        //when
+        List<Posts> postsList = postsRepository.findAll();
+
+        //then
+        Posts posts = postsList.get(0);
+        System.out.println(">>>>> createDate"+posts.getCreatedDate()+", modifiedDate="+posts.getModifiedDate());
+
+        assertThat(posts.getCreatedDate()).isAfter(now);
+        assertThat(posts.getModifiedDate()).isAfter(now);
+
     }
 }
