@@ -1,5 +1,6 @@
 package com.springboot_webservice.web;
 
+import com.springboot_webservice.config.auth.LoginUser;
 import com.springboot_webservice.config.auth.dto.SessionUser;
 import com.springboot_webservice.service.posts.PostsService;
 import com.springboot_webservice.web.dto.PostsResponseDto;
@@ -15,29 +16,27 @@ import javax.servlet.http.HttpSession;
 @RequiredArgsConstructor
 @Controller
 public class IndexController {
+
     private final PostsService postsService;
-    private final HttpSession httpSession;
 
     @GetMapping("/")
-    public String index(Model model){
-        model.addAttribute("posts",postsService.findAllDesc());
-        //user 정보  저장하도록 추가함.
-        SessionUser user = (SessionUser) httpSession.getAttribute("user");
-
-        if(user != null){
-            model.addAttribute("userName",user.getName());
+    public String index(Model model, @LoginUser SessionUser user) {
+        model.addAttribute("posts", postsService.findAllDesc());
+        if (user != null) {
+            model.addAttribute("userName", user.getName());
         }
         return "index";
     }
+
     @GetMapping("/posts/save")
-    public String postsSave(){
+    public String postsSave() {
         return "posts-save";
     }
 
     @GetMapping("/posts/update/{id}")
-    public String postsUpdate(@PathVariable Long id, Model model){
+    public String postsUpdate(@PathVariable Long id, Model model) {
         PostsResponseDto dto = postsService.findById(id);
-        model.addAttribute("post",dto);
+        model.addAttribute("post", dto);
 
         return "posts-update";
     }
